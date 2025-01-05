@@ -1,9 +1,58 @@
 import { useState } from 'react';
-import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
+import { ANTHROPIC_API_KEY, SYSTEM_PROMPT } from '../config/chat';
 
 export function useChat(context) {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const formatContext = () => {
+    let contextStr = '';
+    
+    if (context.target) {
+      contextStr += '\nTarget Audience:\n';
+      Object.entries(context.target).forEach(([key, value]) => {
+        if (value) contextStr += `${key}: ${value}\n`;
+      });
+    }
+    
+    if (context.offer) {
+      contextStr += '\nOffer:\n';
+      Object.entries(context.offer).forEach(([key, value]) => {
+        if (value) contextStr += `${key}: ${value}\n`;
+      });
+    }
+    
+    if (context.proof) {
+      contextStr += '\nProof Elements:\n';
+      Object.entries(context.proof).forEach(([key, value]) => {
+        if (value) contextStr += `${key}: ${value}\n`;
+      });
+    }
+    
+    if (context.content) {
+      contextStr += '\nContent Strategy:\n';
+      Object.entries(context.content).forEach(([key, value]) => {
+        if (value) contextStr += `${key}: ${value}\n`;
+      });
+    }
+    
+    if (context.lead) {
+      contextStr += '\nLead Generation:\n';
+      Object.entries(context.lead).forEach(([key, value]) => {
+        if (value) contextStr += `${key}: ${value}\n`;
+      });
+    }
+    
+    if (context.differentiators) {
+      contextStr += '\nDifferentiators:\n';
+      Object.entries(context.differentiators).forEach(([key, value]) => {
+        if (value) contextStr += `${key}: ${value}\n`;
+      });
+    }
+    
+    return contextStr;
+  };
 
   const sendMessage = async (content) => {
     try {
@@ -11,30 +60,25 @@ export function useChat(context) {
       const userMessage = { role: 'user', content };
       setMessages(prev => [...prev, userMessage]);
 
-      const apiKey = localStorage.getItem('apiKey');
-      const systemPrompt = localStorage.getItem('systemPrompt');
+      const anthropic = new Anthropic({
+        apiKey: ANTHROPIC_API_KEY,
+      });
 
-      if (!apiKey) {
-        throw new Error('API key not found');
-      }
-
-      const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+      const contextStr = formatContext();
+      const completion = await anthropic.messages.create({
+        model: "claude-2",
+        max_tokens: 1000,
         messages: [
           {
-            role: 'system',
-            content: systemPrompt.replace('[name]', context.name).replace('[topic]', context.topic)
-          },
-          ...messages,
-          userMessage
+            role: 'user',
+            content: `${SYSTEM_PROMPT}\n\nContext:\n${contextStr}\n\nUser: ${content}`
+          }
         ]
       });
 
       const aiMessage = {
         role: 'assistant',
-        content: completion.choices[0].message.content
+        content: completion.content[0].text
       };
 
       setMessages(prev => [...prev, aiMessage]);

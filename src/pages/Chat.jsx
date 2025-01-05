@@ -1,10 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Container, TextInput, Paper, Text, Button, Stack, Group, Loader } from '@mantine/core';
+import { Container, TextInput, Paper, Button, Stack, Group, Loader } from '@mantine/core';
 import { ChatMessage } from '../components/ChatMessage';
+import { ContextForm } from '../components/ContextForm';
 import { useChat } from '../hooks/useChat';
 
 export default function Chat() {
-  const [context, setContext] = useState({ name: '', topic: '' });
+  const [context, setContext] = useState({
+    target: {},
+    offer: {},
+    proof: {},
+    content: {},
+    lead: {},
+    differentiators: {}
+  });
   const [message, setMessage] = useState('');
   const { messages, isLoading, sendMessage } = useChat(context);
   const messagesEndRef = useRef(null);
@@ -26,25 +34,12 @@ export default function Chat() {
   };
 
   return (
-    <Container size="md" py="xl">
+    <Container size="xl" py="xl">
       <Paper p="md" withBorder mb="md">
-        <Group grow>
-          <TextInput
-            label="Your Name"
-            value={context.name}
-            onChange={(e) => setContext(prev => ({ ...prev, name: e.target.value }))}
-            placeholder="Enter your name"
-          />
-          <TextInput
-            label="Topic"
-            value={context.topic}
-            onChange={(e) => setContext(prev => ({ ...prev, topic: e.target.value }))}
-            placeholder="Enter the topic"
-          />
-        </Group>
+        <ContextForm context={context} setContext={setContext} />
       </Paper>
 
-      <Paper p="md" withBorder style={{ height: '60vh', overflowY: 'auto' }}>
+      <Paper p="md" withBorder style={{ height: '40vh', overflowY: 'auto' }}>
         <Stack spacing="md">
           {messages.map((msg, index) => (
             <ChatMessage key={index} message={msg} />

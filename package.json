@@ -15,7 +15,7 @@
     "@mantine/core": "^6.0.19",
     "@mantine/hooks": "^6.0.19",
     "@emotion/react": "^11.11.1",
-    "openai": "^4.0.0"
+    "@anthropic-ai/sdk": "^0.6.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

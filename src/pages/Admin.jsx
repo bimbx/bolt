@@ -15,10 +15,10 @@ export default function Admin() {
       <Title order={1} mb="lg">Admin Settings</Title>
       <Paper p="md" withBorder>
         <TextInput
-          label="API Key"
+          label="Anthropic API Key"
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
-          placeholder="Enter your OpenAI API key"
+          placeholder="Enter your Anthropic API key"
           mb="md"
         />
         <Textarea
