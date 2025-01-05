@@ -1,12 +1,13 @@
 import React from 'react';
-import { Paper, Text } from '@mantine/core';
+import { Paper, Text, Group } from '@mantine/core';
 
 export function ChatMessage({ message }) {
   const isUser = message.role === 'user';
 
   return (
     <Paper
-      p="sm"
+      p="md"
+      withBorder
       style={{
         backgroundColor: isUser ? '#e3f2fd' : '#f5f5f5',
         marginLeft: isUser ? 'auto' : '0',
@@ -14,10 +15,12 @@ export function ChatMessage({ message }) {
         maxWidth: '80%',
       }}
     >
-      <Text size="sm" weight={500} color={isUser ? 'blue' : 'dark'}>
-        {isUser ? 'You' : 'AI'}
-      </Text>
-      <Text>{message.content}</Text>
+      <Group position="apart" mb="xs">
+        <Text size="sm" weight={500} color={isUser ? 'blue' : 'dark'}>
+          {isUser ? 'You' : 'AI Assistant'}
+        </Text>
+      </Group>
+      <Text style={{ whiteSpace: 'pre-wrap' }}>{message.content}</Text>
     </Paper>
   );
 }
